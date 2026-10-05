@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GSI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- AUTHENTICATION VIEW -->
+  <div id="auth-view" class="auth-wrapper" style="display: none;">
+    <div class="auth-box">
+      <div style="margin-bottom: 28px;">
+        <h1 style="font-size: 32px; font-weight: 700; color: #1a73e8; letter-spacing: -0.5px; margin-bottom: 6px;">
+          GSI
+        </h1>
+        <p id="auth-subtitle" style="font-size: 15px; color: #5f6368;">
+          Sign in to your account
+        </p>
+      </div>
+
+      <div id="auth-error" class="alert-error" style="display: none; margin-bottom: 16px;"></div>
+
+      <form id="auth-form">
+        <div class="form-field">
+          <label class="form-field-label" for="auth-phone">Phone Number</label>
+          <input type="tel" id="auth-phone" class="form-input" placeholder="e.g. 08012345678 or 555-1234" required autofocus>
+        </div>
+
+        <div class="form-field" style="margin-top: 12px;">
+          <label class="form-field-label" for="auth-password">Password</label>
+          <input type="password" id="auth-password" class="form-input" placeholder="Enter password" required>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px;">
+          <button type="button" id="auth-toggle-btn" class="nav-link-btn" style="color: #1a73e8; font-size: 13px;">
+            Create account
+          </button>
+          <button type="submit" id="auth-submit-btn" class="btn-primary">
+            Sign in
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP VIEW -->
+  <div id="app-view" style="display: none;">
+    <header>
+      <div class="header-container">
+        <div class="header-left">
+          <button type="button" id="sidebar-toggle-btn" class="menu-toggle-btn" title="Toggle sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="brand-title">GSI</div>
+        </div>
+
+        <div class="header-nav">
+          <!-- Currency Selector (20 popular currencies with Naira and Dollar) -->
+          <select id="currency-select" class="currency-select" title="Select currency">
+            <option value="NGN">₦ NGN (Naira)</option>
+            <option value="USD" selected>$ USD (Dollar)</option>
+            <option value="EUR">€ EUR (Euro)</option>
+            <option value="GBP">£ GBP (Pound)</option>
+            <option value="JPY">¥ JPY (Yen)</option>
+            <option value="CAD">C$ CAD (Canadian Dollar)</option>
+            <option value="AUD">A$ AUD (Australian Dollar)</option>
+            <option value="CHF">CHF CHF (Swiss Franc)</option>
+            <option value="CNY">¥ CNY (Chinese Yuan)</option>
+            <option value="INR">₹ INR (Indian Rupee)</option>
+            <option value="ZAR">R ZAR (South African Rand)</option>
+            <option value="GHS">GH₵ GHS (Ghanaian Cedi)</option>
+            <option value="KES">KSh KES (Kenyan Shilling)</option>
+            <option value="AED">AED AED (UAE Dirham)</option>
+            <option value="SAR">SAR SAR (Saudi Riyal)</option>
+            <option value="BTC">₿ BTC (Bitcoin)</option>
+            <option value="ETH">Ξ ETH (Ethereum)</option>
+            <option value="USDT">₮ USDT (Tether)</option>
+            <option value="BNB">BNB BNB (Binance Coin)</option>
+            <option value="SOL">SOL SOL (Solana)</option>
+          </select>
+
+          <button type="button" id="open-about-btn" class="nav-link-btn">About</button>
+          <span id="user-display-phone" class="user-phone-label"></span>
+          <button type="button" id="logout-btn" class="nav-logout-btn">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <!-- Collapsible / Expandable Sidebar -->
+      <aside id="app-sidebar" class="sidebar">
+        <button type="button" class="sidebar-nav-item active" data-tab="withdrawals" title="Where money went">
+          <span class="sidebar-nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+            </svg>
+          </span>
+          <span class="sidebar-nav-label">Where money went</span>
+          <span id="withdrawals-count" class="sidebar-nav-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-tab="incomes" title="Income sources">
+          <span class="sidebar-nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+              <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+            </svg>
+          </span>
+          <span class="sidebar-nav-label">Income sources</span>
+          <span id="incomes-count" class="sidebar-nav-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-tab="jobs" title="Job Profitability">
+          <span class="sidebar-nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </span>
+          <span class="sidebar-nav-label">Job Profitability</span>
+          <span id="jobs-count" class="sidebar-nav-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-tab="assets" title="Asset Yield">
+          <span class="sidebar-nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+          </span>
+          <span class="sidebar-nav-label">Asset Yield</span>
+          <span id="assets-count" class="sidebar-nav-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-tab="savings" title="Goal Savings">
+          <span class="sidebar-nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+          </span>
+          <span class="sidebar-nav-label">Goal Savings</span>
+          <span id="savings-count" class="sidebar-nav-count">0</span>
+        </button>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="content-area">
+        <!-- Clean Balance Display (Zero Boxes) -->
+        <section class="balance-section">
+          <div class="balance-caption">Available Balance</div>
+          <div id="balance-amount" class="balance-amount">$0.00</div>
+          <div class="balance-sub">
+            Total Income: <span id="total-income" class="balance-sub-in">+$0.00</span>
+            &nbsp;•&nbsp;
+            Total Withdrawn: <span id="total-withdrawn" class="balance-sub-out">-$0.00</span>
+          </div>
+
+          <div class="action-buttons">
+            <button type="button" id="btn-open-add-income" class="btn-primary">
+              + Add Income
+            </button>
+            <button type="button" id="btn-open-withdraw" class="btn-withdraw">
+              − Withdraw Money
+            </button>
+          </div>
+        </section>
+
+        <hr class="section-divider">
+
+      <!-- Tab 1: Withdrawals List with Inline Accountability -->
+      <section id="tab-content-withdrawals">
+        <div id="withdrawals-list"></div>
+      </section>
+
+      <!-- Tab 2: Incomes List -->
+      <section id="tab-content-incomes" style="display: none;">
+        <div id="incomes-list"></div>
+      </section>
+
+      <!-- Tab 3: Job Profitability (Net Work Yield / Loss Tracker) -->
+      <section id="tab-content-jobs" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #202124;">Job & Earning Profitability</div>
+            <div style="font-size: 13px; color: #5f6368;">Calculate all expenses spent on transport, food, clothes, data, and bills to see if you are running at a loss.</div>
+          </div>
+          <button type="button" id="btn-open-add-job" class="btn-primary" style="font-size: 13px; padding: 6px 14px;">
+            + Track New Job / Salary
+          </button>
+        </div>
+        <div id="jobs-list"></div>
+      </section>
+
+      <!-- Tab 4: Asset Productivity Tracker -->
+      <section id="tab-content-assets" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #202124;">Asset Productivity Tracker</div>
+            <div style="font-size: 13px; color: #5f6368;">Track how much money your purchases (laptop, car, book, phone) have generated to see if they paid for themselves.</div>
+          </div>
+          <button type="button" id="btn-open-add-asset" class="btn-primary" style="font-size: 13px; padding: 6px 14px;">
+            + Register Asset
+          </button>
+        </div>
+        <div id="assets-list"></div>
+      </section>
+
+      <!-- Tab 5: Goal Savings (With Sad App Deduction Reaction) -->
+      <section id="tab-content-savings" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: #202124;">Target Savings Goals</div>
+            <div style="font-size: 13px; color: #5f6368;">Save towards things you want to buy. Stay disciplined—withdrawing makes the app sad!</div>
+          </div>
+          <button type="button" id="btn-open-add-saving" class="btn-primary" style="font-size: 13px; padding: 6px 14px;">
+            + New Savings Target
+          </button>
+        </div>
+        <div id="savings-list"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+  <!-- MODAL: ADD INCOME -->
+  <div id="modal-add-income" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Income</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-income">✕</button>
+      </div>
+
+      <div id="add-income-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+
+      <form id="form-add-income">
+        <div class="form-field">
+          <label class="form-field-label">Income Source</label>
+          <select id="income-source-select" class="form-input"></select>
+        </div>
+
+        <div id="custom-source-group" class="form-field" style="display: none;">
+          <label class="form-field-label">New Source Name</label>
+          <input type="text" id="income-custom-source" class="form-input" placeholder="e.g. Salary, Freelance, Store">
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Amount (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="income-amount" class="form-input" placeholder="0.00" required>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Date</label>
+          <input type="date" id="income-date" class="form-input" required>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Notes (Optional)</label>
+          <input type="text" id="income-notes" class="form-input" placeholder="Optional detail">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-income">Cancel</button>
+          <button type="submit" class="btn-primary">Save Income</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: WITHDRAW MONEY (GATEKEEPER) -->
+  <div id="modal-withdraw" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Withdraw Money</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-withdraw">✕</button>
+      </div>
+
+      <div id="withdraw-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+
+      <form id="form-withdraw">
+        <div class="form-field">
+          <div style="display: flex; justify-content: space-between;">
+            <label class="form-field-label">Source of Income</label>
+            <span id="withdraw-source-avail" style="font-size: 12px; color: #5f6368;">Available: $0.00</span>
+          </div>
+          <select id="withdraw-source-select" class="form-input"></select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-field">
+            <label class="form-field-label">Amount to withdraw (<span class="currency-symbol">$</span>)</label>
+            <input type="number" step="any" id="withdraw-amount" class="form-input" placeholder="0.00" required>
+          </div>
+
+          <div class="form-field">
+            <label class="form-field-label">How much it will yield (<span class="currency-symbol">$</span>)</label>
+            <input type="number" step="any" id="withdraw-yield" class="form-input" placeholder="Must be > withdrawal" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Reason for the amount</label>
+          <input type="text" id="withdraw-reason" class="form-input" placeholder="e.g. Food, cloth, tool, book" required>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field-label">Benefit of the amount</label>
+          <textarea id="withdraw-benefit" rows="2" class="form-input" placeholder="State the benefit this purchase will give you" required></textarea>
+        </div>
+
+        <!-- Realtime Gatekeeper Message -->
+        <div id="gatekeeper-msg" style="margin: 16px 0; font-size: 13px; line-height: 1.4;"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-withdraw">Cancel</button>
+          <button type="submit" id="btn-submit-withdraw" class="btn-primary" disabled>Withdraw</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD JOB / SALARY -->
+  <div id="modal-add-job" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Track Job / Expected Earning</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-job">✕</button>
+      </div>
+      <div id="job-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-add-job">
+        <div class="form-field">
+          <label class="form-field-label">Job or Earning Source</label>
+          <input type="text" id="job-title-input" class="form-input" placeholder="e.g. Monthly Job Salary, Freelance Contract" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Expected Amount (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="job-amount-input" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Timeframe to get it</label>
+          <input type="text" id="job-timeframe-input" class="form-input" placeholder="e.g. 1 Month, 2 Weeks, 40 Hours" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-job">Cancel</button>
+          <button type="submit" class="btn-primary">Track Job</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD JOB DIRECT EXPENSE -->
+  <div id="modal-add-job-expense" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Add Work Expense</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-job-expense">✕</button>
+      </div>
+      <p style="font-size: 13px; color: #5f6368; margin-bottom: 14px;">
+        Add money spent directly to achieve this job (transport, food, clothes, data, bills) to see if you are running at a loss.
+      </p>
+      <div id="job-expense-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-add-job-expense">
+        <input type="hidden" id="job-expense-job-id">
+        <div class="form-field">
+          <label class="form-field-label">Expense Description</label>
+          <input type="text" id="job-expense-name" class="form-input" placeholder="e.g. Bus transport / Fuel, Shift Lunch, Work Clothes, Phone Data" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Amount Spent (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="job-expense-amount" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-job-expense">Cancel</button>
+          <button type="submit" class="btn-primary">Add Expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTER ASSET -->
+  <div id="modal-add-asset" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Register Asset</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-asset">✕</button>
+      </div>
+      <div id="asset-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-add-asset">
+        <div class="form-field">
+          <label class="form-field-label">Asset Name</label>
+          <input type="text" id="asset-name-input" class="form-input" placeholder="e.g. Laptop, Car, House, Book, Phone" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Purchase Cost (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="asset-cost-input" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Purpose for getting it</label>
+          <textarea id="asset-purpose-input" rows="2" class="form-input" placeholder="State how this asset was supposed to generate value or help you" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-asset">Cancel</button>
+          <button type="submit" class="btn-primary">Save Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: LOG ASSET EARNING -->
+  <div id="modal-add-asset-earning" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Log Asset Earning</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-asset-earning">✕</button>
+      </div>
+      <p style="font-size: 13px; color: #5f6368; margin-bottom: 14px;">
+        You can log earnings from this asset as many times as you want to measure its productivity.
+      </p>
+      <div id="asset-earning-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-add-asset-earning">
+        <input type="hidden" id="asset-earning-asset-id">
+        <div class="form-field">
+          <label class="form-field-label">Amount Made (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="asset-earning-amount" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Date</label>
+          <input type="date" id="asset-earning-date" class="form-input" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Description / Source</label>
+          <input type="text" id="asset-earning-desc" class="form-input" placeholder="e.g. Freelance project, Ride fare, Sale" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-asset-earning">Cancel</button>
+          <button type="submit" class="btn-primary">Add Earning</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW SAVINGS TARGET -->
+  <div id="modal-add-saving" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">New Savings Target</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-add-saving">✕</button>
+      </div>
+      <div id="saving-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-add-saving">
+        <div class="form-field">
+          <label class="form-field-label">What do you want to use it to buy?</label>
+          <input type="text" id="saving-title-input" class="form-input" placeholder="e.g. Land, Camera, Work Laptop, Travel" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Target Amount Needed (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="saving-target-input" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-add-saving">Cancel</button>
+          <button type="submit" class="btn-primary">Create Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DEPOSIT SAVINGS -->
+  <div id="modal-deposit-saving" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Add to Savings</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-deposit-saving">✕</button>
+      </div>
+      <div id="deposit-saving-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-deposit-saving">
+        <input type="hidden" id="deposit-saving-id">
+        <div class="form-field">
+          <label class="form-field-label">Amount to Save (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="deposit-saving-amount" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Source of Income</label>
+          <select id="deposit-saving-source" class="form-input"></select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-deposit-saving">Cancel</button>
+          <button type="submit" class="btn-primary">Deposit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DEDUCT FROM SAVINGS (THE SAD APP REACTION) -->
+  <div id="modal-deduct-saving" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" style="color: #495057;">Deduct From Savings</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-deduct-saving">✕</button>
+      </div>
+
+      <!-- The Sad App Banner -->
+      <div class="sad-app-banner">
+        <span class="sad-emoji">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#6c757d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            <path d="M8 12c0 .6.4 1 1 1s1-.4 1-1c0-.6-1-1.8-1-1.8S8 11.4 8 12z" fill="#1a73e8" stroke="none"></path>
+          </svg>
+        </span>
+        <div class="sad-title">GSI is heartbroken you are withdrawing...</div>
+        <div class="sad-desc">
+          You made sacrifices to build this savings! Taking money out sets your dream backward.
+        </div>
+      </div>
+
+      <div id="deduct-saving-error" class="alert-error" style="display: none; margin-bottom: 14px;"></div>
+      <form id="form-deduct-saving">
+        <input type="hidden" id="deduct-saving-id">
+        <div class="form-field">
+          <label class="form-field-label">Amount to Deduct (<span class="currency-symbol">$</span>)</label>
+          <input type="number" step="any" id="deduct-saving-amount" class="form-input" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label">Reason for withdrawing this money</label>
+          <textarea id="deduct-saving-reason" rows="2" class="form-input" placeholder="Why are you breaking into your savings?" required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" data-close="modal-deduct-saving">Keep My Savings (Cancel)</button>
+          <button type="submit" class="btn-withdraw">Confirm Deduction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ABOUT GSI -->
+  <div id="modal-about" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">About GSI</h2>
+        <button type="button" class="modal-close-btn" data-close="modal-about">✕</button>
+      </div>
+
+      <div style="font-size: 14px; color: #3c4043; line-height: 1.6;">
+        <p style="margin-bottom: 14px;">
+          <strong>GSI</strong> stands for <strong>Get, Save, and Invest</strong>.
+        </p>
+        <p style="margin-bottom: 14px;">
+          It is a personal financial ledger designed to help you track where every bit of your money went.
+          Before taking out or spending any money, the system requires you to prove that the expense will yield a larger amount of money than the amount withdrawn.
+        </p>
+        <p style="margin-bottom: 14px;">
+          Even for everyday essentials like food or clothing, you must specify the monetary amount you will earn because you ate that food or wore that cloth. If the projected yield is not bigger than the withdrawal, the system will not allow you to withdraw the money.
+        </p>
+        <p style="margin-bottom: 14px;">
+          Later on, you can return to the ledger, tick if you achieved what you said the money was for, and fill in to what extent it was successful.
+        </p>
+        <p style="color: #5f6368; font-size: 13px; border-top: 1px solid #e0e0e0; padding-top: 12px;">
+          Note: Real money will not be deposited or withdrawn from your bank account; this is purely for personal accounting and discipline.
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" data-close="modal-about">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
